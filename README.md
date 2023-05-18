@@ -47,7 +47,21 @@ You can then execute your native executable with: `./target/quarkus-artemis-1.0.
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
 
+
+## Build and Deployment
+
+> [Guide: DEPLOYING ON OPENSHIFT](https://quarkus.io/guides/deploying-to-openshift)
+
+```shell script
+$ oc create secret generic artemis-secret --from-literal="QUARKUS_ARTEMIS_PASSWORD=${BROKER_CREDENTIAL_PASSWORD}"
+
+$ oc create configmap artemis-conf --from-literal=QUARKUS_ARTEMIS_URL="(tcp://${BROKER_SVC_ACCEPTOR_TCP}:61616)" --from-literal="QUARKUS_ARTEMIS_USERNAME=${BROKER_CREDENTIAL_USERNAME}"
+
+./mvnw install -Dquarkus.kubernetes.deploy=true
+```
+
 ## Related Guides
 
 - OpenShift ([guide](https://quarkus.io/guides/deploying-to-openshift)): Generate OpenShift resources from annotations
 - Artemis JMS ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-artemis/dev/index.html)): Use JMS APIs to connect to ActiveMQ Artemis via its native protocol
+- https://quarkus.io/guides/jms 
