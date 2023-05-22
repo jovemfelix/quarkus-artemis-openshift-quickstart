@@ -29,7 +29,7 @@ If you want to build an _über-jar_, execute the following command:
 ./mvnw package -Dquarkus.package.type=uber-jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+The application, packaged as an _uber-jar_, is now runnable using `java -jar target/*-runner.jar`.
 
 ## Creating a native executable
 
@@ -48,16 +48,28 @@ You can then execute your native executable with: `./target/quarkus-artemis-1.0.
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
 
 
-## Build and Deployment
+## Create the App Config/Secret at the Cluster
+
+```shell script
+# create a project if you don't have one
+$ oc new-project myquarkus
+
+$ oc create secret generic artemis-secret --from-literal="QUARKUS_ARTEMIS_PASSWORD=${BROKER_CREDENTIAL_PASSWORD}"
+
+$ oc create configmap artemis-conf --from-literal=QUARKUS_ARTEMIS_URL="(tcp://${BROKER_SVC_ACCEPTOR_TCP}:61616)" --from-literal="QUARKUS_ARTEMIS_USERNAME=${BROKER_CREDENTIAL_USERNAME}"
+```
+
+### Build and Deployment
 
 > [Guide: DEPLOYING ON OPENSHIFT](https://quarkus.io/guides/deploying-to-openshift)
 
 ```shell script
-$ oc create secret generic artemis-secret --from-literal="QUARKUS_ARTEMIS_PASSWORD=${BROKER_CREDENTIAL_PASSWORD}"
-
-$ oc create configmap artemis-conf --from-literal=QUARKUS_ARTEMIS_URL="(tcp://${BROKER_SVC_ACCEPTOR_TCP}:61616)" --from-literal="QUARKUS_ARTEMIS_USERNAME=${BROKER_CREDENTIAL_USERNAME}"
-
 ./mvnw install -Dquarkus.kubernetes.deploy=true
+```
+
+### Or Just Deploy with an existing image
+```shell script
+$ oc create -f k8s/deploymentConfig.yaml
 ```
 
 ## Related Guides
